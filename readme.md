@@ -7,7 +7,7 @@ Comments appreciated as GitHub issues and pull requests or email (firstname@firs
 [Reviews](reviews.md) and [my responses](response-to-reviews.md) are included in the repository, along with the [submitted version](icfp21-submitted.pdf) to which the reviews & responses refer.
 
 Run "make" to compile the sources and typeset the paper.
-The Agda code should work at least with [Agda](https://github.com/agda/agda) 2.6.1.3 and [agda-stdlib](https://github.com/agda/agda-stdlib) version 1.5.
+The Agda code should work at least with [Agda](https://github.com/agda/agda) 2.6.4.3 and [agda-stdlib](https://github.com/agda/agda-stdlib) version 2.1.
 
 **Abstract:**
 

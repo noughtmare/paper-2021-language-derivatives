@@ -10,7 +10,7 @@ open import Data.Sum
 open import Data.Product
 open import Data.List
 open import Data.List.Properties using (++-identityʳ)
-open import Function using (id; _∘_; _↔_; mk↔′)
+open import Function using (id; _∘_; _↔_; mk↔ₛ′)
 open import Relation.Binary.PropositionalEquality hiding ([_])
 
 open import Misc {ℓ}
@@ -209,29 +209,29 @@ private
 ν∪ = refl
 ν𝒰 = refl
 
-ν𝟏 = mk↔′
+ν𝟏 = mk↔ₛ′
   (λ { refl → tt })
   (λ { tt → refl })
   (λ { tt → refl })
   (λ { refl → refl })
 
-δ𝟏 = mk↔′ (λ ()) (λ ()) (λ ()) (λ ())
+δ𝟏 = mk↔ₛ′ (λ ()) (λ ()) (λ ()) (λ ())
 
-ν` = mk↔′ (λ ()) (λ ()) (λ ()) (λ ())
+ν` = mk↔ₛ′ (λ ()) (λ ()) (λ ()) (λ ())
 
-δ` = mk↔′
+δ` = mk↔ₛ′
   (λ { refl → refl , refl })
   (λ { (refl , refl) → refl })
   (λ { (refl , refl) → refl })
   (λ { refl → refl })
 
-ν⋆ = mk↔′
+ν⋆ = mk↔ₛ′
   (λ { (([] , []) , refl , νP , νQ) → νP , νQ })
   (λ { (νP , νQ) → ([] , []) , refl , νP , νQ })
   (λ { (νP , νQ) → refl } )
   (λ { (([] , []) , refl , νP , νQ) → refl})
 
-δ⋆ {a = a} {w = w} = mk↔′
+δ⋆ {a = a} {w = w} = mk↔ₛ′
   (λ { (([] , .(a ∷ w)) , refl , νP , Qaw) → inj₁ (νP , Qaw)
      ; ((.a ∷ u , v) , refl , Pu , Qv) → inj₂ ((u , v) , refl , Pu , Qv) })
   (λ { (inj₁ (νP , Qaw)) → ([] , a ∷ w) , refl , νP , Qaw
@@ -241,7 +241,7 @@ private
   (λ { (([] , .(a ∷ w)) , refl , νP , Qaw) → refl
      ; ((.a ∷ u , v) , refl , Pu , Qv) → refl })
 
-ν✪ {P = P} = mk↔′ k k⁻¹ invˡ invʳ
+ν✪ {P = P} = mk↔ₛ′ k k⁻¹ invˡ invʳ
  where
    k : ν (P ✪) → (ν P) ✶
    k zero✪ = []
@@ -259,7 +259,7 @@ private
    invʳ zero✪ = refl
    invʳ (suc✪ (([] , []) , refl , (νP , νP✪))) rewrite invʳ νP✪ = refl
 
-δ✪ {P}{a} {w} = mk↔′ k k⁻¹ invˡ invʳ
+δ✪ {P}{a} {w} = mk↔ₛ′ k k⁻¹ invˡ invʳ
  where
    k : δ (P ✪) a w → ((ν P) ✶ · (δ P a ⋆ P ✪)) w
    k (suc✪ (([] , .(a ∷ w)) , refl , (νP , P✪a∷w))) with k P✪a∷w
@@ -378,7 +378,7 @@ open import Closed.Instances ; open Types {ℓ}
 
 
 {-
-ν☆ {P = P} = mk↔′ k k⁻¹ invˡ invʳ
+ν☆ {P = P} = mk↔ₛ′ k k⁻¹ invˡ invʳ
  where
    k : ν (P ☆) → (ν P) ✶
    k (.[] , refl , []) = []
@@ -397,7 +397,7 @@ open import Closed.Instances ; open Types {ℓ}
    invʳ ([] , refl , []) = refl
    invʳ ([] ∷ ws , eq , νp ∷ pws) rewrite invʳ (ws , eq , pws) = refl
 
-δ☆ {P}{a} {w} = mk↔′ k k⁻¹ invˡ invʳ
+δ☆ {P}{a} {w} = mk↔ₛ′ k k⁻¹ invˡ invʳ
  where
    k : δ (P ☆) a w → ((ν P) ✶ · (δ P a ⋆ P ☆)) w
 

@@ -58,14 +58,15 @@ Decidable₂ _∼_ = ∀ a b → Dec (a ∼ b)
 %<*isomorphisms>
 \begin{code}[hide]
 open import Function.Equality using (Π) ; open Π
-open import Function.Equivalence using (Equivalence; equivalence; _⇔_)
+open import Function using (_⇔_ ; Equivalence)
+open import Function.Properties.Inverse using (↔⇒⇔)
 
 map′ : (A → B) → (B → A) → Dec A → Dec B
 map′ A→B B→A (yes a) = yes (A→B a)
 map′ A→B B→A (no ¬a) = no (¬a ∘ B→A)
 
 map‽⇔ : A ⇔ B → Dec A → Dec B
-map‽⇔ A⇔B = map′ (to ⟨$⟩_) (from ⟨$⟩_) where open Equivalence A⇔B
+map‽⇔ A⇔B = map′ to from where open Equivalence A⇔B
 \end{code}
 \AgdaTarget{\_▹\_, \_◃\_}
 \begin{code}[hide]
@@ -75,7 +76,7 @@ infixr 9 _▸_
 infixr 9 _◂_
 
 _▹_ : A ↔ B → Dec A → Dec B
-f ▹ a? = map‽⇔ (↔→⇔ f) a?
+f ▹ a? = map‽⇔ (↔⇒⇔ f) a?
 
 _▸_ : (P ⟷ Q) → Decidable P → Decidable Q
 (f ▸ p?) w = f ▹ p? w

@@ -50,7 +50,7 @@ module Types {ℓ : Level} where
 
   -- A ✶ ↔ ⊤ ⊎ A × A ✶
   ✶-star : Star {ℓ = ℓ} _↔_ _⊎_ _×_ ⊥ ⊤ _✶
-  ✶-star _ = mk↔′
+  ✶-star _ = mk↔ₛ′
     (λ {[] → inj₁ tt ; (x ∷ xs) → inj₂ (x , xs)})
     (λ {(inj₁ _) → [] ; (inj₂ (x , xs)) → x ∷ xs})
     (λ {(inj₁ _) → refl ; (inj₂ (x , xs)) → refl})
@@ -71,7 +71,7 @@ module Types {ℓ : Level} where
   -- value, we can find more here.
   open import Relation.Nullary
 
-  _✶-reflects : ∀ {A b} → Reflects {p = ℓ} A b → Reflects (A ✶) (b ✦)
+  _✶-reflects : ∀ {A b} → Reflects {a = ℓ} A b → Reflects (A ✶) (b ✦)
   _ ✶-reflects = ofʸ []
 
   infixl 10 _✶-dec

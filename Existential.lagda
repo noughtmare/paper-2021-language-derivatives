@@ -10,9 +10,11 @@ open import Level
 module Existential where
 
 open import Algebra
+open import Algebra.Lattice
 open import Data.Product
 open import Function using (_on_)
 import Relation.Binary.Construct.On as On
+import Algebra.Structures.Biased
 
 private variable b c ℓ : Level
 
@@ -184,9 +186,10 @@ module _ (g : DistributiveLattice c ℓ) (F : DistributiveLattice.Carrier g → 
   open DistributiveLattice g hiding (isLattice) ; open Dop F
   mkDistributiveLattice : D₂ _∨_ → D₂ _∧_ → DistributiveLattice (c ⊔ b) ℓ
   mkDistributiveLattice _∨′_ _∧′_ = record
-    { isDistributiveLattice = record
+    { isDistributiveLattice = record 
         { isLattice = isLattice
-        ; ∨-distribʳ-∧ = prop₃ ∨-distribʳ-∧
+        ; ∨-distrib-∧ = (prop₃ (proj₁ ∨-distrib-∧)) , (prop₃ (proj₂ ∨-distrib-∧))
+        ; ∧-distrib-∨ = (prop₃ (proj₁ ∧-distrib-∨)) , (prop₃ (proj₂ ∧-distrib-∨))
         }
     } where open Lattice (mkLattice lattice F _∨′_ _∧′_)
 
@@ -194,12 +197,12 @@ module _ (r : NearSemiring c ℓ) (F : NearSemiring.Carrier r → Set b) where
   open NearSemiring r hiding (+-isMonoid; *-isSemigroup) ; open Dop F
   mkNearSemiring : D₂ _+_ → D₂ _*_ → D₀ 0# → NearSemiring (c ⊔ b) ℓ
   mkNearSemiring _+′_ _*′_ 0#′ = record
-    { isNearSemiring = record
+    { isNearSemiring = IsNearSemiring*.isNearSemiring (record
         { +-isMonoid = +-isMonoid
         ; *-isSemigroup = *-isSemigroup
         ; distribʳ = prop₃ distribʳ
         ; zeroˡ = prop₁ zeroˡ
-        }
+        })
     } where open Monoid (mkMonoid +-monoid F _+′_ 0#′)
                renaming (isMonoid to +-isMonoid)
             open Semigroup (mkSemigroup *-semigroup F _*′_)
@@ -209,12 +212,12 @@ module _ (r : SemiringWithoutOne c ℓ) (F : SemiringWithoutOne.Carrier r → Se
   open SemiringWithoutOne r hiding (+-isCommutativeMonoid; *-isSemigroup) ; open Dop F
   mkSemiringWithoutOne : D₂ _+_ → D₂ _*_ → D₀ 0# → SemiringWithoutOne (c ⊔ b) ℓ
   mkSemiringWithoutOne _+′_ _*′_ 0#′ = record
-    { isSemiringWithoutOne = record
+    { isSemiringWithoutOne = IsSemiringWithoutOne*.isSemiringWithoutOne (record
         { +-isCommutativeMonoid = +-isCommutativeMonoid
         ; *-isSemigroup = *-isSemigroup
         ; distrib = prop₃ (proj₁ distrib) , prop₃ (proj₂ distrib)
         ; zero = prop₁ zeroˡ , prop₁ zeroʳ
-        }
+        })
     } where open CommutativeMonoid
                    (mkCommutativeMonoid +-commutativeMonoid F _+′_ 0#′)
                renaming (isCommutativeMonoid to +-isCommutativeMonoid)
@@ -242,11 +245,11 @@ module _ (r : SemiringWithoutAnnihilatingZero c ℓ)
   mkSemiringWithoutAnnihilatingZero : D₂ _+_ → D₂ _*_ → D₀ 0# → D₀ 1#
                                     → SemiringWithoutAnnihilatingZero (c ⊔ b) ℓ
   mkSemiringWithoutAnnihilatingZero _+′_ _*′_ 0#′ 1#′ = record
-    { isSemiringWithoutAnnihilatingZero = record
+    { isSemiringWithoutAnnihilatingZero = IsSemiringWithoutAnnihilatingZero*.isSemiringWithoutAnnihilatingZero (record
         { +-isCommutativeMonoid = +-isCommutativeMonoid
         ; *-isMonoid = *-isMonoid
         ; distrib = prop₃ (proj₁ distrib) , prop₃ (proj₂ distrib)
-        }
+        })
     } where open CommutativeMonoid
                    (mkCommutativeMonoid +-commutativeMonoid F _+′_ 0#′)
                renaming (isCommutativeMonoid to +-isCommutativeMonoid)
@@ -291,7 +294,7 @@ module _ (r : CancellativeCommutativeSemiring c ℓ)
   mkCancellativeCommutativeSemiring _+′_ _*′_ 0#′ 1#′ = record
     { isCancellativeCommutativeSemiring = record
         { isCommutativeSemiring = isCommutativeSemiring
-        ; *-cancelˡ-nonZero = λ (y , _) (z , _) q r → *-cancelˡ-nonZero y z q r
+        ; *-cancelˡ-nonZero = λ (x , _) (y , _) (z , _) q r → *-cancelˡ-nonZero x y z q r
         }
     } where open CommutativeSemiring
                    (mkCommutativeSemiring commutativeSemiring F _+′_ _*′_ 0#′ 1#′)
@@ -300,12 +303,12 @@ module _ (r : Ring c ℓ) (F : Ring.Carrier r → Set b) where
   open Ring r hiding (+-isAbelianGroup; *-isMonoid) ; open Dop F
   mkRing : D₂ _+_ → D₂ _*_ → D₁ (-_) → D₀ 0# → D₀ 1# → Ring (c ⊔ b) ℓ
   mkRing _+′_ _*′_ -′_ 0#′ 1#′ = record
-    { isRing = record
+    { isRing = IsRing*.isRing (record
         { +-isAbelianGroup = +-isAbelianGroup
         ; *-isMonoid = *-isMonoid
         ; distrib = prop₃ (proj₁ distrib) , prop₃ (proj₂ distrib)
         ; zero = prop₁ zeroˡ , prop₁ zeroʳ
-        }
+        })
     } where open AbelianGroup (mkAbelianGroup +-abelianGroup F _+′_ 0#′ -′_)
                renaming (isAbelianGroup to +-isAbelianGroup)
             open Monoid (mkMonoid *-monoid F _*′_ 1#′)

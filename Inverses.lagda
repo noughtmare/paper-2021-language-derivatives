@@ -20,10 +20,12 @@ open import Data.Sum hiding (map₂)
 open import Data.Sum.Algebra
 open import Data.List
 open import Data.List.Properties
-open import Function using (id; _∘_; const; flip; _↔_; Inverse; mk↔′; mk↔)
+open import Function using (id; _∘_; const; flip; _↔_; Inverse; mk↔ₛ′; mk↔)
 open import Relation.Binary using (Rel; IsEquivalence)
 open import Relation.Binary.PropositionalEquality
-open import Function.Equivalence using (_⇔_; equivalence)
+open import Function using (_⇔_)
+open import Function.Properties.Inverse using (↔⇒⇔)
+open import Function.Equivalence using (equivalence)
 
 open import Function.Properties.Inverse using (↔-isEquivalence)
 module ↔Eq {ℓ} = IsEquivalence {ℓ = ℓ} ↔-isEquivalence
@@ -79,12 +81,12 @@ module ⟷R {A : Set ℓ} = SetoidR (record {isEquivalence = ⟷-isEquivalence {
 ≡↔ refl = ↔Eq.refl
 
 sym↔ : ∀ {a b : A} → a ≡ b ↔ b ≡ a
-sym↔ = mk↔′ sym sym (λ {refl → refl}) (λ {refl → refl})
+sym↔ = mk↔ₛ′ sym sym (λ {refl → refl}) (λ {refl → refl})
 
 -- Maybe give this one a more specific name and add ?? : a ≡ b → b ≡ c ↔ a ≡ c
 trans↔ : ∀ {a b c : A} → b ≡ c → a ≡ b ↔ a ≡ c
 trans↔ refl =
-  mk↔′ (λ {refl → refl}) (λ {refl → refl}) (λ {refl → refl}) (λ {refl → refl})
+  mk↔ₛ′ (λ {refl → refl}) (λ {refl → refl}) (λ {refl → refl}) (λ {refl → refl})
 \end{code}
 
 \subsection{Products and sums}
@@ -113,7 +115,7 @@ trans↔ refl =
 ⊎-congˡ C↔D = ⊎-cong ↔Eq.refl C↔D
 
 ∃-distrib-⟨×⟩ : ∃ (P ⟨×⟩ Q) ↔ (∃ P × ∃ Q)
-∃-distrib-⟨×⟩ {P = P}{Q = Q} = mk↔′
+∃-distrib-⟨×⟩ {P = P}{Q = Q} = mk↔ₛ′
   (λ ((a , b) , (Pa , Qb)) → ((a , Pa) , (b , Qb)))
   (λ ((a , Pa) , (b , Qb)) → ((a , b) , (Pa , Qb)))
   (λ _ → refl)
@@ -123,48 +125,48 @@ trans↔ refl =
 ×-transpose = ∃-distrib-⟨×⟩
 
 ∃-distrib-∪ : ∃ (P ∪ Q) ↔ (∃ P ⊎ ∃ Q)
-∃-distrib-∪ {P = P}{Q} = mk↔′
+∃-distrib-∪ {P = P}{Q} = mk↔ₛ′
   (λ {(a , inj₁ p) → inj₁ (a , p) ; (a , inj₂ q) → inj₂ (a , q)})
   (λ {(inj₁ (a , p)) → a , inj₁ p ; (inj₂ (a , q)) → a , inj₂ q})
   (λ {(inj₁ (a , p)) → refl ; (inj₂ (a , q)) → refl})
   (λ {(a , inj₁ p) → refl ; (a , inj₂ q) → refl})
 
 ∃-distrib-∅ : Σ A (λ _ → ⊥) ↔ ⊥
-∃-distrib-∅ = mk↔′ (λ ()) (λ ()) (λ ()) (λ ())
+∃-distrib-∅ = mk↔ₛ′ (λ ()) (λ ()) (λ ()) (λ ())
 
 ∃-distrib-⊤ : Σ A (λ _ → ⊤) ↔ A
 ∃-distrib-⊤ = ×-identityʳ _ _
 
 ∃-distrib-∩ : ∃ (λ (a , b) → P a × Q b) ↔ (∃ P × ∃ Q)
-∃-distrib-∩ = mk↔′
+∃-distrib-∩ = mk↔ₛ′
  (λ ((a , b) , (Pa , Qb)) → (a , Pa) , (b , Qb))
  (λ ((a , Pa) , (b , Qb)) → (a , b) , (Pa , Qb))
  (λ ((a , Pa) , (b , Qb)) → refl)
  (λ ((a , b) , (Pa , Qb)) → refl)
 
 ∃-×-constˡ : ∃ (λ z → A × Q z) ↔ (A × ∃ Q)
-∃-×-constˡ = mk↔′
+∃-×-constˡ = mk↔ₛ′
   (λ (z , (a , Qz)) → a , (z , Qz))
   (λ (a , (z , Qz)) → z , (a , Qz))
   (λ (a , (z , Qz)) → refl)
   (λ (z , (a , Qz)) → refl)
 
 ∃-×-constʳ : ∃ (λ z → P z × B) ↔ (∃ P × B)
-∃-×-constʳ = mk↔′
+∃-×-constʳ = mk↔ₛ′
   (λ (z , (Pz , b)) → (z , Pz) , b)
   (λ ((z , Pz) , b) → z , (Pz , b))
   (λ ((z , Pz) , b) → refl)
   (λ (z , (Pz , b)) → refl)
 
 ×-distrib-∃ˡ : (A × ∃ Q) ↔ ∃ (λ v → A × Q v)
-×-distrib-∃ˡ = mk↔′
+×-distrib-∃ˡ = mk↔ₛ′
   (λ (a , b , Qb) → b , a , Qb)
   (λ (b , a , Qb) → a , b , Qb)
   (λ (b , a , Qb) → refl)
   (λ (a , b , Qb) → refl)
 
 ×-distrib-∃ʳ : (∃ P × B) ↔ ∃ (λ u → P u × B)
-×-distrib-∃ʳ = mk↔′
+×-distrib-∃ʳ = mk↔ₛ′
   (λ ((a , Pa) , b) →  a , Pa  , b)
   (λ ( a , Pa  , b) → (a , Pa) , b)
   (λ ( a , Pa  , b) → refl)
@@ -179,9 +181,10 @@ trans↔ refl =
 \end{code}
 %</exCongSig>
 \begin{code}
-∃-cong P↔Q = mk↔′ (map₂ J.f) (map₂ J.f⁻¹)
-  (λ (a , d) → Inverse.f Σ-≡,≡↔≡ (refl , J.inverseˡ d) )
-  (λ (a , c) → Inverse.f Σ-≡,≡↔≡ (refl , J.inverseʳ c) )
+∃-cong P↔Q = 
+ mk↔ₛ′ (map₂ J.to) (map₂ J.from)
+  (λ (a , d) → Inverse.to Σ-≡,≡↔≡ (refl , J.strictlyInverseˡ d) )
+  (λ (a , c) → Inverse.to Σ-≡,≡↔≡ (refl , J.strictlyInverseʳ c) )
  where
    module J {t} = Inverse (P↔Q {t} )
 \end{code}
@@ -201,17 +204,17 @@ trans↔ refl =
 Existentials with various domain shapes:
 \begin{code}
 ∃⊥ : ∀ {P : ⊥ → Set ℓ} → ∃ P ↔ ⊥
-∃⊥ = mk↔′ (λ ()) (λ ()) (λ ()) (λ ())
+∃⊥ = mk↔ₛ′ (λ ()) (λ ()) (λ ()) (λ ())
 
 ∃⊎ : ∀ {P : A ⊎ B → Set ℓ} → ∃ P ↔ (∃ (P ∘ inj₁) ⊎ ∃ (P ∘ inj₂))
-∃⊎ = mk↔′
+∃⊎ = mk↔ₛ′
   (λ { (inj₁ b , z) → inj₁ (b , z) ; (inj₂ c , z) → inj₂ (c , z) })
   (λ { (inj₁ (b , z)) → inj₁ b , z ; (inj₂ (c , z)) → inj₂ c , z })
   (λ { (inj₁ _) → refl ; (inj₂ _) → refl })
   (λ { (inj₁ _ , _) → refl ; (inj₂ _ , _) → refl })
 
 ∃⊤ : ∀ {P : ⊤ → Set ℓ} → ∃ P ↔ P tt
-∃⊤ = mk↔′
+∃⊤ = mk↔ₛ′
   (λ { (tt , Ptt) → Ptt })
   (λ { Ptt → tt , Ptt })
   (λ { Ptt → refl })
@@ -220,7 +223,7 @@ Existentials with various domain shapes:
 open import Data.Bool
 
 ∃Bool : ∀ {P : Bool → Set ℓ} → ∃ P ↔ (P false ⊎ P true)
-∃Bool = mk↔′
+∃Bool = mk↔ₛ′
   (λ { (false , Pfalse) → inj₁ Pfalse ; (true , Ptrue) → inj₂ Ptrue })
   (λ { (inj₁ Pfalse) → false , Pfalse ; (inj₂ Ptrue) → true , Ptrue })
   (λ { (inj₁ Pfalse) → refl ; (inj₂ Ptrue) → refl })
@@ -231,21 +234,21 @@ open import Data.Bool
 \begin{code}
 ∃sub : ∀ {f : A → B} {P : B → Set ℓ}
       → (∃ λ b → P (f b)) ↔ (∃ λ c → P c × ∃ λ b → c ≡ f b)
-∃sub {f = f}{P} = mk↔′
+∃sub {f = f}{P} = mk↔ₛ′
   (λ { (b , Pc) → f b , Pc , b , refl })
   (λ { (.(f b) , Pc , b , refl) → b , Pc })
   (λ { (.(f b) , Pc , b , refl) → refl })
   (λ { (b , Pc) → refl })
 
 ∃×↔∃∃ : ∀ {P : A × B → Set ℓ} → ∃ P ↔ ∃₂ (curry P)
-∃×↔∃∃ = mk↔′
+∃×↔∃∃ = mk↔ₛ′
   (λ {((b , c) , Pb,c) → b , c , Pb,c})
   (λ {(b , c , Pb,c) → (b , c) , Pb,c})
   (λ {(b , c , Pb,c) → refl})
   (λ {((b , c) , Pb,c) → refl})
 
 ∃× : ∃⇃ (λ (a , b) → P a × Q b) ↔ (∃ P × ∃ Q)
-∃× = mk↔′
+∃× = mk↔ₛ′
   (λ {((a , b) , (fa , gb)) → (a , fa) , (b , gb)})
   (λ {((a , fa) , (b , gb)) → (a , b) , (fa , gb)})
   (λ _ → refl)
@@ -253,14 +256,14 @@ open import Data.Bool
 
 ∃≡proj₁ : ∀ {ℓ₁ ℓ₂}{A : Set ℓ₁} {B : A → Set ℓ₂} {a : A}
         → ∃ (λ (ab : Σ A B) → a ≡ proj₁ ab) ↔ B a
-∃≡proj₁ {a = a} = mk↔′
+∃≡proj₁ {a = a} = mk↔ₛ′
   (λ { ((.a , b) , refl) → b })
   (λ { b → (a , b) , refl })
   (λ { b → refl })
   (λ { ((.a , b) , refl) → refl })
 
 ∃≡ : ∀ {x : A} → ∃ (x ≡_) ↔ ⊤
-∃≡ {x = x} = mk↔′ (λ {(.x , refl) → tt}) (λ {tt → x , refl})
+∃≡ {x = x} = mk↔ₛ′ (λ {(.x , refl) → tt}) (λ {tt → x , refl})
                   (λ {tt → refl}) (λ {(.x , refl) → refl})
 \end{code}
 
@@ -270,7 +273,7 @@ open import Data.Bool
 \end{code}
 %</exElimSig>
 \begin{code}
-∃≡ˡ {z = z} = mk↔′ (λ {(.z , refl , Pz) → Pz} ) (λ Pz → z , refl , Pz)
+∃≡ˡ {z = z} = mk↔ₛ′ (λ {(.z , refl , Pz) → Pz} ) (λ Pz → z , refl , Pz)
                    (λ _ → refl) (λ {(.z , refl , Pz) → refl})
 
 -- Where should ∃¹ and ∃² go?
@@ -312,7 +315,7 @@ open import Data.Bool
 -- version is level-polymorphic.
 
 ∃≡ʳ : ∀ {P : A → Set ℓ} {z} → (∃ λ u → P u × u ≡ z) ↔ P z
-∃≡ʳ {z = z} = mk↔′
+∃≡ʳ {z = z} = mk↔ₛ′
  (λ {(u , Pz , refl) → Pz})
  (λ Pz → z , Pz , refl)
  (λ _ → refl)
@@ -344,7 +347,7 @@ open import Data.Bool
 
 -- ∃₂≡ˡ : ∀ {A : Set ℓ} {B : Set ℓ} {P : A → B → Set c} {y z}
 --      → (∃₂ λ u v → (u ≡ y × v ≡ z) × P u v) ↔ P y z
--- ∃₂≡ˡ {y = y} {z} = mk↔′
+-- ∃₂≡ˡ {y = y} {z} = mk↔ₛ′
 --  (λ {(.y , .z , (refl , refl) , Pyz) → Pyz})
 --  (λ Pyz → y , z , (refl , refl) , Pyz)
 --  (λ Pyz → refl)
@@ -352,21 +355,21 @@ open import Data.Bool
 
 -- ∃₂≡ʳ : ∀ {A : Set ℓ} {B : Set ℓ} {P : A → B → Set c} {y z}
 --      → (∃₂ λ u v → P u v × (u ≡ y × v ≡ z)) ↔ P y z
--- ∃₂≡ʳ {y = y} {z} = mk↔′
+-- ∃₂≡ʳ {y = y} {z} = mk↔ₛ′
 --  (λ {(.y , .z , Pyz , (refl , refl)) → Pyz})
 --  (λ Pyz → y , z , Pyz , (refl , refl))
 --  (λ Pyz → refl)
 --  (λ {(.y , .z , Pyz , (refl , refl)) → refl})
 
 ∃≡² : ∀ {P Q : A → Set ℓ} {v} → (∃ λ p → P p × p ≡ v × Q p) ↔ (P v × Q v)
-∃≡² {v = v} = mk↔′
+∃≡² {v = v} = mk↔ₛ′
  (λ {(p , Pp , refl , Qp) → Pp , Qp})
  (λ {(Pv , Qv) → v , Pv , refl , Qv})
  (λ {(Pv , Qv) → refl})
  (λ {(p , Pp , refl , Qp) → refl})
 
 -- distrib-∃ˡ : ∀ {A : Set ℓ}{G : Set d → Set ℓ} → (A × ∃ G) ↔ ∃ (λ u → A × G u)   -- ∃ (A *ₗ G)
--- distrib-∃ˡ {A = A}{G = G} = mk↔′
+-- distrib-∃ˡ {A = A}{G = G} = mk↔ₛ′
 --   (λ (a , u , b) → u , a , b)
 --   (λ (u , a , b) → a , u , b)
 --   (λ _ → refl)
@@ -405,40 +408,40 @@ _⟪×⟫_ : (A → Pred C) → (B → Pred D) → ((A × B) → Pred (C × D))
 
 \begin{code}
 module _ {P : A → Set ℓ} (A↔B : A ↔ B) where
-  open Inverse A↔B
+  open Inverse A↔B renaming (to to f ; from to f⁻¹)
   open ≡-Reasoning
   private
 
     g : ∃ P → ∃ (P ∘ f⁻¹)
-    g (a , Pa) = f a , subst P (sym (inverseʳ a)) Pa
+    g (a , Pa) = f a , subst P (sym (strictlyInverseʳ a)) Pa
     -- g (a , Pa) = f a , {!!}
 
     g⁻¹ : ∃ (P ∘ f⁻¹) → ∃ P
     g⁻¹ (b , Pf⁻¹b) = f⁻¹ b , Pf⁻¹b
 
     g⁻¹∘g : g⁻¹ ∘ g ≗ id
-    g⁻¹∘g (a , Pa) = Inverse.f Σ-≡,≡↔≡ 
-                       (inverseʳ a , subst-subst-sym (inverseʳ a))
+    g⁻¹∘g (a , Pa) = Inverse.to Σ-≡,≡↔≡ 
+                       (strictlyInverseʳ a , subst-subst-sym (strictlyInverseʳ a))
 
     -- Two proofs of f⁻¹ (f (f⁻¹ b)) ≡ f⁻¹ b. Uses K.
     open import Axiom.UniquenessOfIdentityProofs.WithK
-    f⁻¹∘f∘f⁻¹ : ∀ b → cong f⁻¹ (inverseˡ b) ≡ inverseʳ (f⁻¹ b)
+    f⁻¹∘f∘f⁻¹ : ∀ b → cong f⁻¹ (strictlyInverseˡ b) ≡ strictlyInverseʳ (f⁻¹ b)
     f⁻¹∘f∘f⁻¹ _ = uip _ _
 
     g∘g⁻¹ : g ∘ g⁻¹ ≗ id
     g∘g⁻¹ (b , Pf⁻¹b) =
-      Inverse.f Σ-≡,≡↔≡
-        ( inverseˡ b
+      Inverse.to Σ-≡,≡↔≡
+        ( strictlyInverseˡ b
         , (begin
-             subst (P ∘ f⁻¹) (inverseˡ b)
-               (subst P (sym (inverseʳ (f⁻¹ b))) Pf⁻¹b)
-           ≡⟨ subst-∘ (inverseˡ b) ⟩
-             subst P (cong f⁻¹ (inverseˡ b))
-               (subst P (sym (inverseʳ (f⁻¹ b))) Pf⁻¹b)
-           ≡⟨ cong (λ z → subst P z _) (f⁻¹∘f∘f⁻¹ b) ⟩
-             subst P (inverseʳ (f⁻¹ b))
-               (subst P (sym (inverseʳ (f⁻¹ b))) Pf⁻¹b)
-           ≡⟨ subst-subst-sym (inverseʳ (f⁻¹ b)) ⟩
+             subst (P ∘ f⁻¹) (strictlyInverseˡ b)
+               (subst P (sym (strictlyInverseʳ (f⁻¹ b))) Pf⁻¹b)
+           ≡⟨ subst-∘ (strictlyInverseˡ b) ⟩
+             subst P (cong f⁻¹ (strictlyInverseˡ b))
+               (subst P (sym (strictlyInverseʳ (f⁻¹ b))) Pf⁻¹b)
+           ≡⟨ cong (λ z → subst P z (subst P (sym (strictlyInverseʳ (f⁻¹ b))) Pf⁻¹b)) (f⁻¹∘f∘f⁻¹ b) ⟩
+             subst P (strictlyInverseʳ (f⁻¹ b))
+               (subst P (sym (strictlyInverseʳ (f⁻¹ b))) Pf⁻¹b)
+           ≡⟨ subst-subst-sym (strictlyInverseʳ (f⁻¹ b)) ⟩
              Pf⁻¹b
            ∎)
         )
@@ -447,7 +450,7 @@ module _ {P : A → Set ℓ} (A↔B : A ↔ B) where
     -- Maybe define specialized versions instead. See ∃✶ below.
 
   ∃dom : ∃ P ↔ ∃ (P ∘ f⁻¹)
-  ∃dom = mk↔′ g g⁻¹ g∘g⁻¹ g⁻¹∘g
+  ∃dom = mk↔ₛ′ g g⁻¹ g∘g⁻¹ g⁻¹∘g
 
 -- Lists
 module _ {X : Set ℓ} where
@@ -458,13 +461,13 @@ module _ {X : Set ℓ} where
       u v w : X ✶
 
   ∷≡[]↔ : x ∷ w ≡ [] ↔ ⊥
-  ∷≡[]↔ = mk↔′ (λ ()) (λ ()) (λ ()) (λ ())
+  ∷≡[]↔ = mk↔ₛ′ (λ ()) (λ ()) (λ ()) (λ ())
 
   []≡∷↔ : [] ≡ x ∷ w ↔ ⊥
   []≡∷↔ = ↔Eq.trans sym↔ ∷≡[]↔
 
   ∷≡∷↔ : y ∷ u ≡ x ∷ w ↔ (y ≡ x × u ≡ w)
-  ∷≡∷↔ = mk↔′ (λ {refl → refl , refl} ) (λ {(refl , refl) → refl})
+  ∷≡∷↔ = mk↔ₛ′ (λ {refl → refl , refl} ) (λ {(refl , refl) → refl})
               (λ {(refl , refl) → refl}) (λ {refl → refl})
 
 \end{code}
@@ -475,16 +478,16 @@ module _ {X : Set ℓ} where
 %</emptyAppend>
 \begin{code}[hide]
   []≡++ {u = []} {[]} =
-    mk↔′ (λ {refl → refl}) (λ {refl → refl})
+    mk↔ₛ′ (λ {refl → refl}) (λ {refl → refl})
          (λ {refl → refl}) (λ {refl → refl})
-  []≡++ {u = []} {_ ∷ _} = mk↔′ (λ ()) (λ ()) (λ ()) (λ ())
-  []≡++ {u = _ ∷ _}  {_} = mk↔′ (λ ()) (λ ()) (λ ()) (λ ())
+  []≡++ {u = []} {_ ∷ _} = mk↔ₛ′ (λ ()) (λ ()) (λ ()) (λ ())
+  []≡++ {u = _ ∷ _}  {_} = mk↔ₛ′ (λ ()) (λ ()) (λ ()) (λ ())
 
   module _ where
     open import Closed.Instances using (module Types)
     open Types {ℓ}
     iso = ✶-star X
-    open Inverse iso
+    open Inverse iso renaming (to to f ; from to f⁻¹)
     open ↔R
 
     ∃✶A : ∀ {P} → ∃ P ↔ ∃ (P ∘ f⁻¹)
@@ -504,7 +507,7 @@ module _ {X : Set ℓ} where
     --   ∎
 
 ∃✶ : ∀ {X} {P : X ✶ → Set ℓ} → ∃ P ↔ (P [] ⊎ ∃⇃ λ (x , xs) → P (x ∷ xs))
-∃✶ {P = P} = mk↔′
+∃✶ {P = P} = mk↔ₛ′
   (λ { ([] , P[]) → inj₁ P[] ; (x ∷ xs , Px∷xs) → inj₂ ((x , xs) , Px∷xs) })
   (λ { (inj₁ P[]) → [] , P[] ; (inj₂ ((x , xs) , Px∷xs)) → (x ∷ xs) , Px∷xs })
   (λ { (inj₁ P[]) → refl ; (inj₂ ((x , xs) , Px∷xs)) → refl })
@@ -521,9 +524,6 @@ module _ where
   open import Relation.Nullary.Decidable using () renaming (map to map?⇔)
   open import Relation.Unary             using (Decidable)
 
-  ↔→⇔ : (A ↔ B) → (A ⇔ B)
-  ↔→⇔ A↔B = equivalence f f⁻¹ where open Inverse A↔B
-
 \end{code}
 %<*mapDec>
 \begin{code}
@@ -531,7 +531,7 @@ module _ where
 \end{code}
 %</mapDec>
 \begin{code}
-  map?↔ = map?⇔ ∘ ↔→⇔
+  map?↔ = map?⇔ ∘ ↔⇒⇔
 \end{code}
 %<*mapDecInv>
 \AgdaTarget{map?⁻¹}

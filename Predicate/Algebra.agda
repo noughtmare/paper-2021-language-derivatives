@@ -52,13 +52,15 @@ open MonoidSemiringProperties isMonoid-M
   ; identity = mapⱽ-identity identity
   }
 
+open import Algebra.Structures.Biased
+
 ⋆-∪-isSemiringWithoutAnnihilatingZero :
   IsSemiringWithoutAnnihilatingZero _∪_ _⋆_ ∅ 𝟏
-⋆-∪-isSemiringWithoutAnnihilatingZero = record
+⋆-∪-isSemiringWithoutAnnihilatingZero = IsSemiringWithoutAnnihilatingZero*.isSemiringWithoutAnnihilatingZero (record
   { +-isCommutativeMonoid = +ᴹ-isCommutativeMonoid {M}
   ; *-isMonoid = ⋆-isMonoid
   ; distrib = mapⱽ-distrib
-  }
+  })
 
 ⋆-∪-isSemiring : IsSemiring _∪_ _⋆_ ∅ 𝟏
 ⋆-∪-isSemiring = record

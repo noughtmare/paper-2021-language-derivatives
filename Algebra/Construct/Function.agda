@@ -11,6 +11,8 @@ module Algebra.Construct.Function {a} (A : Set a) where
 
 open import Data.Product using (_,_; proj₁; proj₂)
 open import Algebra
+open import Algebra.Lattice
+import Algebra.Structures.Biased
 
 open import Closed
 
@@ -92,13 +94,13 @@ commutativeMonoid M = record
 semiringWithoutAnnihilatingZero : SemiringWithoutAnnihilatingZero b ℓ
                                 → SemiringWithoutAnnihilatingZero (b ⊔ a) (a ⊔ ℓ)
 semiringWithoutAnnihilatingZero R = record
-  { isSemiringWithoutAnnihilatingZero = record
+  { isSemiringWithoutAnnihilatingZero = IsSemiringWithoutAnnihilatingZero*.isSemiringWithoutAnnihilatingZero (record
      { +-isCommutativeMonoid = CommutativeMonoid.isCommutativeMonoid
                                  (commutativeMonoid +-commutativeMonoid)
      ; *-isMonoid = Monoid.isMonoid (monoid (*-monoid))
      ; distrib = (λ f g h {x} → distribˡ (f x) (g x) (h x))
                , (λ f g h {x} → distribʳ (f x) (g x) (h x))
-     }
+     })
   } where open SemiringWithoutAnnihilatingZero R
 
 semiring : Semiring b ℓ → Semiring (a ⊔ b) _
@@ -204,6 +206,7 @@ semimodule {R = R} = record
              RightSemimodule.isPrerightSemimodule rightSemimodule
          ; *ₗ-*ᵣ-assoc = λ s f t {a} → *-assoc s (f a) t
          }
+     ; *ₗ-*ᵣ-coincident = λ x m {a} → *-comm x (m a)
      }
   } where open CommutativeSemiring R
 

@@ -20,7 +20,7 @@ open import Algebra.Bundles
 open import Algebra.Module.Bundles
 open import Relation.Binary.PropositionalEquality
      using (_≡_; _≗_; cong; module ≡-Reasoning) renaming (refl to refl≡; sym to sym≡)
-open import Function using (id; _∘_; const; flip; _↔_; Inverse; mk↔′)
+open import Function using (id; _∘_; const; flip; _↔_; Inverse; mk↔ₛ′)
 open import Relation.Unary using (_⊢_)
 
 open import Data.Product.Algebra using (Σ-assoc)
@@ -379,14 +379,14 @@ mapⱽ-map₂ {P = P}{Q = Q}{g = g} = let open ⟷R in
 -- Connection between covariant and contravariant functors
 
 module _ (A↔B : A ↔ B) where
-  open Inverse A↔B
+  open Inverse A↔B renaming (to to f ; from to f⁻¹)
   -- TODO: Can we avoid K?
   open import Axiom.UniquenessOfIdentityProofs.WithK using (uip)
 
   ≡⁻¹ : b ≡ f a  ↔  a ≡ f⁻¹ b
-  ≡⁻¹ {b = b}{a = a} = mk↔′
-    (λ {refl≡ → sym≡ (inverseʳ a)})
-    (λ {refl≡ → sym≡ (inverseˡ b)})
+  ≡⁻¹ {b = b}{a = a} = mk↔ₛ′
+    (λ {refl≡ → sym≡ (strictlyInverseʳ a)})
+    (λ {refl≡ → sym≡ (strictlyInverseˡ b)})
     (λ a≡f⁻¹b → uip _ a≡f⁻¹b)
     (λ a≡f⁻¹b → uip _ a≡f⁻¹b)
 
@@ -409,7 +409,7 @@ module _ (A↔B : A ↔ B) where
       (λ b → ∃ λ a → a ≡ f⁻¹ b × P (f a))
     ≈⟨ ∃≡ˡ ⟩
       (λ b → P (f (f⁻¹ b)))
-    ≈⟨ ≡↔ (cong P (inverseˡ _)) ⟩
+    ≈⟨ ≡↔ (cong P (strictlyInverseˡ _)) ⟩
       (λ b → P b)
     ≡⟨⟩
       P
@@ -651,7 +651,7 @@ module MonoidSemiringProperties {M : Set ℓ} {_∙_ : Op₂ M} {ε : M}
   open import Data.List.Relation.Unary.All
 
   ☆-star : P ☆ ⟷ 𝟏 ∪ P ⋆ P ☆
-  ☆-star {w = w} = mk↔′
+  ☆-star {w = w} = mk↔ₛ′
     (λ { ([] , refl≡ , []) → inj₁ refl≡
        ; (p ∷ ps , refl≡ , Pp ∷ Pps) → inj₂ ((p , foldr _∙_ ε ps) , refl≡ , Pp , ps , refl≡ , Pps) })
     (λ { (inj₁ refl≡) → [] , refl≡ , []
@@ -662,7 +662,7 @@ module MonoidSemiringProperties {M : Set ℓ} {_∙_ : Op₂ M} {ε : M}
        ; (p ∷ ps , refl≡ , Pp ∷ Pps) → refl≡ })
 
   ✪↔☆ : P ✪ ⟷ P ☆
-  ✪↔☆ {P = P} = mk↔′ f f⁻¹ invˡ invʳ
+  ✪↔☆ {P = P} = mk↔ₛ′ f f⁻¹ invˡ invʳ
    where
      f : ∀ {w} → (P ✪) w → (P ☆) w
      f zero✪ = [] , refl≡ , []
