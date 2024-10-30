@@ -11,6 +11,7 @@ open import Algebra.Core
 open import Data.Sum
 open import Data.Product
 open import Data.List
+open import Data.Nat using (ℕ) renaming (zero to ℕzero ; suc to ℕsuc)
 open import Data.List.Relation.Unary.All
 open import Relation.Binary.PropositionalEquality hiding ([_])
 
@@ -26,6 +27,7 @@ _·_ : Set ℓ → Op₁ Lang
 _⋆_ : Op₂ Lang
 _☆ : Op₁ Lang
 ` : A → Lang
+fix : (Lang → Lang) → Lang
 
 infixr 6 _∪_
 infixr 6 _∩_
@@ -71,6 +73,11 @@ Lang = A ✶ → Set ℓ
 (P ⋆ Q) w = ∃⇃ λ (u ,  v) → (w ≡ u ⊙ v) × P u × Q v
 
 (P ☆) w = ∃ λ ws → (w ≡ concat ws) × All P ws
+
+fix f w = ∃ λ n → go n w where
+  go : ℕ → Lang
+  go ℕzero = ∅
+  go (ℕsuc n) = f (go n)
 \end{code}
 \end{minipage}
 \hfill\;

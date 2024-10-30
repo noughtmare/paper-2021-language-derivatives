@@ -36,7 +36,7 @@ infix   9 _◂_
 infixl 10 _☆
 \end{code}
 \begin{code}
-data Lang : ◇.Lang → Set (suc ℓ) where
+data Lang {- (X : Set) -} : {- (X → -} ◇.Lang {- ) -} → Set (suc ℓ) where
   ∅    : Lang  ◇.∅
   𝒰    : Lang  ◇.𝒰
   _∪_  : Lang  P  → Lang Q  → Lang (P  ◇.∪  Q)
@@ -47,6 +47,28 @@ data Lang : ◇.Lang → Set (suc ℓ) where
   _☆   : Lang  P  → Lang (P ◇.☆)
   `    : (a : A) → Lang (◇.` a)
   _◂_  : (Q ⟷ P) → Lang P → Lang Q
+
+open import Data.Maybe
+open import Data.List using (List ; _∷_ ; [])
+open import Data.Nat using (ℕ) renaming (zero to ℕzero ; suc to ℕsuc)
+open import Data.Vec using (Vec ; lookup ; _∷_)
+open import Data.Fin using (Fin)
+open import Function using (const)
+
+data Lang′ (n : ℕ) : (Vec ◇.Lang n → ◇.Lang) → Set (suc ℓ) where
+  ∅    : Lang′ n (const ◇.∅)
+  𝒰   : Lang′ n (const ◇.𝒰)
+  _∪_  : ∀{P Q} → Lang′ n P  → Lang′ n Q  → Lang′ n (λ v → P v  ◇.∪  Q v)
+  _∩_  : ∀{P Q} → Lang′ n P  → Lang′ n Q  → Lang′ n (λ v → P v  ◇.∩  Q v)
+  _·_  : ∀{P} → Dec   s  → Lang′ n P  → Lang′ n (λ v → s ◇.·  P v)
+  𝟏   : Lang′ n (const ◇.𝟏)
+  _⋆_  : ∀{P Q} → Lang′ n P  → Lang′ n Q  → Lang′ n (λ v → P v  ◇.⋆  Q v)
+  -- _☆   : ∀{Xs} → Lang  P  → Lang (P ◇.☆)
+  `    : (a : A) → Lang′ n (const (◇.` a))
+  _◂_  : ∀{P Q} → (∀{v} → Q v ⟷ P v) → Lang′ n P → Lang′ n Q
+  var : (m : Fin n) → Lang′ n (λ xs → lookup xs m)
+  fix : ∀{f} → Lang′ (ℕsuc n) f → Lang′ n (λ xs → ◇.fix (λ x → f (x ∷ xs)))
+
 \end{code}
 \end{center}
 \iftalk

@@ -132,6 +132,15 @@ module ListOps (A : Set ℓ) where
   Lang : Set (suc ℓ)
   Lang = Pred (A ✶)
 
+  open import Data.Product
+  open import Data.Nat using (ℕ) renaming (suc to ℕsuc ; zero to ℕzero)
+
+  fix : (Lang → Lang) → Lang
+  fix f w = ∃ λ n → go n w where
+    go : ℕ → Lang
+    go ℕzero = ∅
+    go (ℕsuc n) = f (go n)
+
   ` : A → Lang
 \end{code}
 \begin{code}
