@@ -79,6 +79,28 @@ data Lang′ (n : ℕ) : (Vec ◇.Lang n → ◇.Lang) → Set (suc ℓ) where
 \begin{code}
 ν  : Lang P → Dec (◇.ν P)
 δ  : Lang P → (a : A) → Lang (◇.δ P a)
+
+open import Data.Product
+open import Relation.Binary.PropositionalEquality
+open import Function
+open import Data.Vec.Properties
+
+-- postulate lookup-map : ∀{ℓ ℓ′} {A : Set ℓ} {B : A → Set ℓ′} {f : (x : A) → B x} {n : ℕ} {v : Vec A n} {i : Fin n} → f (lookup v i) ≡ lookup (Data.Vec.map (λ r → f r) v) i
+
+ν′ : ∀{n f} → Lang′ n f → (v : Vec (Σ[ x ∈ ◇.Lang ] Dec (◇.ν x)) n) → Dec (◇.ν (f (Data.Vec.map proj₁ v)))
+ν′ ∅ _ = no (λ ())
+ν′ 𝒰 _ = yes tt
+ν′ (x ∪ y) v = ν′ x v ⊎‽ ν′ y v
+ν′ (x ∩ y) v = ν′ x v ×‽ ν′ y v
+ν′ (s · x) v = s ×‽ ν′ x v
+ν′ 𝟏 _ = yes refl
+ν′ (x ⋆ y) v = ν⋆ ◃ (ν′ x v ×‽ ν′ y v)
+ν′ (` a) v = no (λ ())
+ν′ (f ◂ x) v = f ◃ ν′ x v
+ν′ (var i) v rewrite lookup-map i proj₁ v = proj₂ (lookup v i)
+ν′ {f = f} (fix x) v = {!!} ◃ ν′ x ({!!} ∷ v)
+-- ν′ {f = f} (fix x) v = {!!} ◃ ν′ x ((f (Data.Vec.map proj₁ v) , ν′ (fix x) v) ∷ v)
+-- ν′ {f = f} (fix x) v = {!!} ◃ ν′ x ((◇.∅ , no λ ()) ∷ v)
 \end{code}
 \end{minipage}
 \hfill
